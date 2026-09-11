@@ -34,17 +34,17 @@ El proyecto consiste en el despliegue de un currículum interactivo completo (Fr
 
 ## 📂 Estructura del Repositorio
 
-\`\`\`text
+```text
 cloud-resume-challenge/
 ├── frontend/
-│   ├── index.html           # Estructura principal y lógica del lado del cliente (Fetch API)
+│   ├── index.html           # Estructura principal y lógica del lado del cliente
 │   └── assets/              # Recursos estáticos
 │       ├── mi-cv.pdf
 │       └── perfil.jpeg
 ├── backend/
 │   └── lambda_function.py   # Lógica de actualización atómica en DynamoDB
 └── README.md
-\`\`\`
+```
 
 ---
 
