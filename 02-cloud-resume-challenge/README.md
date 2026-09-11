@@ -9,12 +9,11 @@ Este repositorio contiene el código fuente y la documentación de la infraestru
 
 El proyecto consiste en el despliegue de un currículum interactivo completo (Frontend y Backend) utilizando una arquitectura **100% Serverless** en Amazon Web Services (AWS), garantizando alta disponibilidad, seguridad y escalabilidad a un coste operativo mínimo.
 
-🔗 **Enlace en vivo:** [AQUÍ TU URL DE CLOUDFRONT O DOMINIO PERSONALIZADO]
+🔗 https://d1b7kkho5ijjl6.cloudfront.net/
 
 ## 🏗️ Arquitectura del Sistema
 
-*[ESPACIO RESERVADO PARA EL DIAGRAMA DE DRAW.IO]*
-> *Nota: El diagrama arquitectónico detallando el flujo de datos y la topología de red se añadirá en este espacio.*
+![Diagrama de Arquitectura AWS](frontend/assets/arquitectura.png)
 
 ### Stack Tecnológico y Servicios AWS
 
