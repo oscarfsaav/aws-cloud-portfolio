@@ -41,6 +41,7 @@ cloud-resume-challenge/
 │   └── assets/              # Recursos estáticos
 │       ├── mi-cv.pdf
 │       └── perfil.jpeg
+│       └── arquitectura.png
 ├── backend/
 │   └── lambda_function.py   # Lógica de actualización atómica en DynamoDB
 └── README.md
