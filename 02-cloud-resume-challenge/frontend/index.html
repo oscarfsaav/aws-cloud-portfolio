@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Óscar Fragueiro Saavedra | Cloud Engineer Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Variables Dark/Cyberpunk Theme */
+            --bg-color: #050a14;
+            --bg-panel: #0d1526;
+            --text-main: #a9b7c6;
+            --text-heading: #e6f1ff;
+            --accent-cyan: #00f3ff;
+            --accent-green: #00ff66;
+            --accent-purple: #bc13fe;
+            --border-color: #1e2d4a;
+            --scanline: rgba(0, 243, 255, 0.02);
+            --shadow-cyan: 0 0 10px rgba(0, 243, 255, 0.3);
+            --shadow-purple: 0 0 10px rgba(188, 19, 254, 0.3);
+        }
+
+        [data-theme="light"] {
+            /* Variables Light Theme */
+            --bg-color: #f0f2f5;
+            --bg-panel: #ffffff;
+            --text-main: #4a5568;
+            --text-heading: #1a202c;
+            --accent-cyan: #0066cc;
+            --accent-green: #059669;
+            --accent-purple: #7c3aed;
+            --border-color: #cbd5e1;
+            --scanline: rgba(0, 0, 0, 0.02);
+            --shadow-cyan: 0 4px 6px rgba(0, 102, 204, 0.1);
+            --shadow-purple: 0 4px 6px rgba(124, 58, 237, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        body {
+            font-family: 'Fira Code', monospace; /* Fuente de consola por defecto */
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        /* Efecto Scanline sutil para el fondo */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scanline) 2px, var(--scanline) 4px);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        p, .font-sans {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Falsa barra superior de ventana (Mac/Linux style) */
+        .window-bar {
+            background: #1a202c;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        [data-theme="light"] .window-bar {
+            background: #e2e8f0;
+        }
+
+        .dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px; height: 12px; border-radius: 50%;
+        }
+        .dot.red { background: #ff5f56; }
+        .dot.yellow { background: #ffbd2e; }
+        .dot.green { background: #27c93f; }
+
+        .window-title {
+            margin: 0 auto;
+            color: #8892b0;
+            font-size: 0.85rem;
+        }
+
+        .content {
+            padding: 2rem 3rem;
+        }
+
+        /* Controles */
+        .controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            font-family: 'Fira Code', monospace;
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-theme {
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+        .btn-theme:hover {
+            background: var(--accent-cyan);
+            color: var(--bg-color);
+            box-shadow: var(--shadow-cyan);
+        }
+
+        .btn-pdf {
+            border: 1px solid var(--accent-purple);
+            color: var(--accent-purple);
+        }
+        .btn-pdf:hover {
+            background: var(--accent-purple);
+            color: var(--bg-color);
+            box-shadow: var(--shadow-purple);
+        }
+
+        /* Prompt Style */
+        .prompt {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+        .command {
+            color: var(--accent-cyan);
+        }
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            height: 1.2em;
+            background-color: var(--accent-cyan);
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Perfil */
+        .profile {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px dashed var(--border-color);
+        }
+
+        .profile-img {
+            width: 140px;
+            height: 140px;
+            border-radius: 12px; /* Más cuadrado/tech */
+            border: 2px solid var(--border-color);
+            object-fit: cover;
+            filter: grayscale(20%);
+            transition: all 0.3s;
+        }
+
+        .profile-img:hover {
+            filter: grayscale(0%);
+            border-color: var(--accent-cyan);
+            box-shadow: var(--shadow-cyan);
+        }
+
+        .profile-info h1 {
+            color: var(--text-heading);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-info h2 {
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .links a {
+            color: var(--accent-cyan);
+            margin-right: 1.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+            text-shadow: 0 0 8px var(--accent-cyan);
+        }
+
+        /* Secciones Generales */
+        .section-block {
+            margin-bottom: 3rem;
+        }
+
+        .section-block h3 {
+            color: var(--text-heading);
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .section-block p {
+            margin-bottom: 1rem;
+        }
+
+        /* Experiencia */
+        .job {
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--border-color);
+            position: relative;
+        }
+
+        .job::before {
+            content: '>';
+            position: absolute;
+            left: -9px;
+            top: 0;
+            color: var(--accent-purple);
+            background: var(--bg-panel);
+            padding: 0 2px;
+        }
+
+        .job-title {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .job-date {
+            font-size: 0.8rem;
+            color: #8892b0;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Grid de Certificaciones */
+        .certs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .cert-card {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-theme="light"] .cert-card {
+            background: #f8fafc;
+        }
+
+        .cert-card:hover {
+            border-color: var(--accent-purple);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-purple);
+        }
+
+        .cert-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .status-done {
+            color: var(--accent-green);
+            background: rgba(0, 255, 102, 0.1);
+            border: 1px solid var(--accent-green);
+        }
+
+        .status-progress {
+            color: var(--accent-cyan);
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--accent-cyan);
+        }
+
+        .cert-title {
+            color: var(--text-heading);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .cert-id {
+            font-size: 0.75rem;
+            color: #8892b0;
+            background: var(--bg-color);
+            padding: 0.4rem;
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid var(--border-color);
+            word-break: break-all;
+        }
+
+        .cert-id span {
+            color: var(--accent-cyan);
+        }
+
+        /* Footer y Contador */
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px dashed var(--border-color);
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .counter-box {
+            margin-top: 1rem;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .content { padding: 1.5rem; }
+            .profile { flex-direction: column; text-align: center; }
+            .controls { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Barra de Ventana OS -->
+        <div class="window-bar">
+            <div class="dots">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="window-title">bash - oscar_fragueiro - 80x24</div>
+        </div>
+
+        <div class="content">
+            <div class="controls">
+                <button id="theme-toggle" class="btn btn-theme">Light Mode</button>
+                <a href="assets/mi-cv.pdf" target="_blank" class="btn btn-pdf">./download_cv.pdf</a>
+            </div>
+
+            <div class="profile">
+                <!-- Imagen en bucket S3 -->
+                <img src="assets/perfil.jpeg" alt="Óscar Fragueiro" class="profile-img" onerror="this.src='https://via.placeholder.com/140/0d1526/00f3ff?text=O.F.'">
+                <div class="profile-info">
+                    <h1><span class="prompt">~ $</span> <span class="command">whoami</span></h1>
+                    <h1 style="font-size: 1.8rem; color: var(--accent-cyan); margin-bottom: 0;">Óscar Fragueiro Saavedra</h1>
+                    <h2>Future AWS Solutions Architect | Cloud & DevOps Engineer</h2>
+                    <div class="links">
+                        <a href="mailto:oscarfragueiro7@gmail.com">[ Email ]</a>
+                        <a href="https://linkedin.com/in/oscarfragueiro" target="_blank">[ LinkedIn ]</a>
+                        <a href="https://github.com/oscarfsaav" target="_blank">[ GitHub ]</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <h3><span class="prompt">~ $</span> cat extracto.txt<span class="cursor"></span></h3>
+                <p class="font-sans">
+                    Desarrollador de Aplicaciones Multiplataforma (DAM) en transición hacia el ecosistema Cloud y DevOps. 
+                    Tengo una sólida base técnica en backend (Java, Python, REST APIs) y administración Linux adquirida en entornos de producción. 
+                    Mi trayectoria previa como docente me ha dotado de un nivel de inglés C2, alta capacidad para redactar documentación 
+                    técnica y facilidad para colaborar en equipos multidisciplinares. Actualmente, estoy construyendo mi <i>career path</i> 
+                    especializándome en automatización y arquitecturas en la nube (AWS & Terraform).
+                </p>
+            </div>
+
+            <div class="section-block">
+                <h3><span class="prompt">~ $</span> ls -la ./experiencia/</h3>
+                
+                <div class="job">
+                    <div class="job-title">Software Developer Intern @ Aerín Sistemas</div>
+                    <div class="job-date">May 2024 - Jun 2026</div>
+                    <p class="font-sans">
+                        Despliegue y configuración de gestores EDI en Linux en entornos de producción. Desarrollo de endpoints REST (Django DRF) y creación de importadores masivos de clientes en Python, implementando automatización de credenciales seguras y reportes de errores.
+                    </p>
+                </div>
+                
+                <div class="job">
+                    <div class="job-title">Profesor de Inglés (Secondary & IB) @ Varios Centros</div>
+                    <div class="job-date">Sept 2016 - Jul 2024</div>
+                    <p class="font-sans">
+                        Gestión integral de grupos educativos (Nivel C2). Desarrollo de excepcionales habilidades de comunicación, estructuración de información compleja para públicos no técnicos y resolución de problemas bajo presión en entornos con estándares internacionales.
+                    </p>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <h3><span class="prompt">~ $</span> ./verify_certs.sh</h3>
+                
+                <div class="certs-grid">
+                    <!-- AWS SAA -->
+                    <div class="cert-card">
+                        <span class="cert-status status-progress">In Progress</span>
+                        <div class="cert-title">AWS Certified Solutions Architect – Associate (SAA-C03)</div>
+                        <p class="font-sans" style="font-size: 0.85rem; color: var(--text-main);">Diseño de arquitecturas resilientes, seguras y de alta disponibilidad.</p>
+                    </div>
+
+                    <!-- Terraform -->
+                    <div class="cert-card">
+                        <span class="cert-status status-progress">In Progress</span>
+                        <div class="cert-title">HashiCorp Certified: Terraform Associate 004</div>
+                        <p class="font-sans" style="font-size: 0.85rem; color: var(--text-main);">Automatización de despliegues e Infraestructura como Código (IaC).</p>
+                    </div>
+
+                    <!-- AWS CCP -->
+                    <div class="cert-card">
+                        <span class="cert-status status-done">Verified</span>
+                        <div class="cert-title">AWS Certified Cloud Practitioner</div>
+                        <div class="cert-id">ID: <span>8bd07fc2e98940299f6442a340ed9ad5</span></div>
+                    </div>
+
+                    <!-- Java -->
+                    <div class="cert-card">
+                        <span class="cert-status status-done">Verified</span>
+                        <div class="cert-title">Java Certified Foundations Associate</div>
+                        <div class="cert-id">ID: <span>101655376JAVA8OJA</span></div>
+                    </div>
+
+                    <!-- Oracle DB -->
+                    <div class="cert-card">
+                        <span class="cert-status status-done">Verified</span>
+                        <div class="cert-title">Oracle Certified Foundations Associate, DB</div>
+                        <div class="cert-id">ID: <span>101655376ODB12COJA</span></div>
+                    </div>
+
+                    <!-- Idioma -->
+                    <div class="cert-card">
+                        <span class="cert-status status-done">Verified</span>
+                        <div class="cert-title">telc Deutsch B1 Zertifikat</div>
+                        <div class="cert-id">Teilnehmernummer: <span>0548802</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <h3><span class="prompt">~ $</span> cd ./proyectos && ls</h3>
+                
+                <div class="job">
+                    <div class="job-title">The Cloud Resume Challenge (Este sitio web)</div>
+                    <p class="font-sans" style="font-size: 0.9rem;">
+                        Implementación completa de un currículum interactivo servido desde un bucket <strong>S3</strong>, 
+                        distribuido globalmente vía <strong>CloudFront</strong>, con dominio en <strong>Route 53</strong> y certificado SSL. 
+                        La infraestructura backend (Serverless) utiliza <strong>API Gateway, AWS Lambda (Python) y DynamoDB</strong>.
+                    </p>
+                </div>
+
+                <div class="job">
+                    <div class="job-title">Ecosistema Financiero Multiplataforma (Java/Spring)</div>
+                    <p class="font-sans" style="font-size: 0.9rem;">
+                        Backend transaccional diseñado con <strong>Java, Spring Boot y PostgreSQL</strong>. Integración de seguridad con 
+                        <strong>JWT</strong>. Implementación de motor de netting (optimización de transferencias) y transacciones atómicas.
+                    </p>
+                </div>
+            </div>
+
+            <footer>
+                <p>> System running smoothly. Built by Óscar Fragueiro.</p>
+                <div class="counter-box">
+                    <span class="command">DynamoDB.get_item('visitors'): </span>
+                    <span id="visitor-count" style="color: var(--accent-purple); font-weight: bold;">--</span>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+
+    <script>
+        // Toggle Dark/Light Mode
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                htmlElement.setAttribute('data-theme', 'light');
+                themeToggleBtn.textContent = 'Dark Mode';
+            } else {
+                htmlElement.setAttribute('data-theme', 'dark');
+                themeToggleBtn.textContent = 'Light Mode';
+            }
+        });
+
+        // ------------------------------------------------------------------
+        // LÓGICA DEL CONTADOR DE VISITAS (API GATEWAY -> LAMBDA -> DYNAMODB)
+        // ------------------------------------------------------------------
+        
+        async function updateVisitorCount() {
+            const apiGatewayUrl = 'https://4yb3hxkly6.execute-api.eu-west-3.amazonaws.com/visitas';
+            
+            try {
+                const response = await fetch(apiGatewayUrl, {
+                    method: 'GET', 
+                });
+                const data = await response.json();
+                
+                // Actualiza el span correcto del footer
+                document.getElementById('visitor-count').innerText = data.visitas;
+            } catch (error) {
+                console.error("Error connecting to backend:", error);
+                document.getElementById('visitor-count').innerText = "ERR_CONNECTION";
+            }
+        }
+
+        // Ejecutar contador al iniciar
+        updateVisitorCount();
+    </script>
+</body>
+</html>
