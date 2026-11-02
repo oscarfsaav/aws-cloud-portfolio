@@ -9,7 +9,7 @@ Este repositorio contiene el código fuente y la documentación de la infraestru
 
 El proyecto consiste en el despliegue de un currículum interactivo completo (Frontend y Backend) utilizando una arquitectura **100% Serverless** en Amazon Web Services (AWS), garantizando alta disponibilidad, seguridad y escalabilidad a un coste operativo mínimo.
 
-🔗 **Enlace en vivo:** d1b7kkho5ijjl6.cloudfront.net
+🔗 **Enlace en vivo:** [d1b7kkho5ijjl6.cloudfront.net](https://d1b7kkho5ijjl6.cloudfront.net)
 
 ## 🏗️ Arquitectura del Sistema
 
@@ -34,7 +34,7 @@ El proyecto consiste en el despliegue de un currículum interactivo completo (Fr
 
 ## 📂 Estructura del Repositorio
 
-\`\`\`text
+```text
 cloud-resume-challenge/
 ├── frontend/
 │   ├── index.html           # Estructura principal y lógica del lado del cliente (Fetch API)
@@ -44,7 +44,6 @@ cloud-resume-challenge/
 ├── backend/
 │   └── lambda_function.py   # Lógica de actualización atómica en DynamoDB
 └── README.md
-\`\`\`
 
 ---
 
