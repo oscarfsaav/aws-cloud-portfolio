@@ -45,6 +45,7 @@ cloud-resume-challenge/
 │   └── lambda_function.py   # Lógica de actualización atómica en DynamoDB
 └── README.md
 
+```
 ---
 
 ## 🧠 Desafíos Técnicos y Lecciones Aprendidas
