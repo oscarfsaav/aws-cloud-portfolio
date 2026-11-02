@@ -39,7 +39,7 @@ Cuando se accede a la URL pública del Balanceador de Carga, el tráfico se alte
 ### 2. Target Group Health Status
 Ambos servidores privados registrados y superando correctamente las comprobaciones de estado (*Health Checks*):
 
-![Target Group Health](./images/03-target-group-health.jpg)
+![Target Group Health](./images/03-target-group-health.png)
 
 ### 3. VPC Network Topology & Resource Map
 Mapa de recursos de la VPC que detalla la separación en 2 capas (subredes públicas y privadas) y el enrutamiento mediante NAT e Internet Gateways:
