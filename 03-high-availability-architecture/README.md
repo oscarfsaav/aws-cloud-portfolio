@@ -1,51 +1,89 @@
-# Highly Available & Secure Web Architecture on AWS
+# Arquitectura web de alta disponibilidad en AWS (multi-AZ, subredes privadas)
 
-## 📌 Project Overview
-This project demonstrates the manual deployment of a highly available, secure, and fault-tolerant 2-Tier web architecture on Amazon Web Services (AWS). The infrastructure spans across two Availability Zones (AZs) in the `eu-west-3` (Paris) region, utilizing an Application Load Balancer (ALB) to distribute incoming traffic to private web servers.
+## 📌 Visión general
 
-## 🏗️ Architecture Diagram
+Despliegue manual (ClickOps) de una **capa web multi-AZ** en AWS. Dos servidores web funcionan en **subredes privadas**, repartidos en dos zonas de disponibilidad de `eu-west-3` (París). La única entrada desde Internet es un **Application Load Balancer (ALB)** situado en las subredes públicas; los servidores no tienen dirección IP pública. La administración se hace con un **EC2 Instance Connect Endpoint (EICE)** en lugar de un bastión.
 
-![AWS High Availability Architecture](./images/00-architecture-diagram.png)
+El objetivo fue practicar la segmentación de red, el diseño con subredes privadas y el balanceo de carga entre zonas antes de automatizarlo con Infraestructura como Código (ver el [roadmap](#-roadmap)). El entorno se eliminó justo después de documentarlo, para evitar costes.
 
-## 🛠️ Technology Stack & AWS Services Used
-* **Networking:** Amazon VPC (Dual-Stack IPv4/IPv6), Internet Gateway, NAT Gateway, Egress-Only Internet Gateway.
-* **Compute:** Amazon EC2 (Amazon Linux 2023), Target Groups.
-* **Security & Access:** Security Groups, EC2 Instance Connect Endpoints (EICE).
-* **Traffic Routing:** Application Load Balancer (ALB).
+## 🏗️ Diagrama de arquitectura
 
-## 🔒 Security & Design Decisions (The "Why")
-Instead of a simple flat network, this architecture adheres to AWS Well-Architected Framework best practices:
+![Diagrama de arquitectura de alta disponibilidad en AWS](./images/00-architecture-diagram.png)
 
-1. **Private Subnet Isolation:** EC2 web servers are placed in private subnets with *no public IP addresses*. This eliminates the risk of direct attacks (e.g., SSH brute force or DDoS) from the public internet.
-2. **Controlled Inbound Traffic:** An **Application Load Balancer (ALB)** resides in the public subnets. It acts as the only entry point for users, accepting HTTP traffic on port 80 and securely routing it internally to the private servers. 
-3. **Controlled Outbound Traffic:** A **NAT Gateway** was deployed in the public subnet to allow the private web servers to download OS patches and software updates (Apache) without exposing them to inbound internet traffic.
-4. **Secure Terminal Access:** Bastion Hosts were avoided to reduce the attack surface and costs. Instead, an **EC2 Instance Connect Endpoint** was created inside the VPC, allowing secure, private CLI access through the AWS Console using IAM authentication.
+## 🛠️ Stack tecnológico y servicios de AWS
 
-## 🚀 Deployment Steps (ClickOps)
-1. **Network Infrastructure:** Created a custom VPC with 2 public and 2 private subnets across `eu-west-3a` and `eu-west-3b`. Configured Route Tables for public (IGW) and private (NAT Gateway) traffic.
-2. **Security Groups:** Created `alb-public-sg` (allowing port 80 from `0.0.0.0/0` and `::/0`) and `web-private-sg` (allowing ports 22 and 80 *only* from the VPC CIDR `10.16.0.0/16`).
-3. **Compute:** Launched two EC2 `t2.micro` instances in the private subnets. Installed and configured Apache using user scripts (see `/scripts`).
-4. **Load Balancing:** Configured a Target Group and attached an Internet-facing ALB with Dual-Stack support to distribute traffic across both AZs.
+- **Red:** Amazon VPC (doble pila IPv4/IPv6), Internet Gateway, NAT Gateway, Egress-Only Internet Gateway, tablas de rutas.
+- **Cómputo:** Amazon EC2 (Amazon Linux 2023, `t2.micro`), Target Group.
+- **Enrutamiento del tráfico:** Application Load Balancer (expuesto a Internet, doble pila).
+- **Seguridad y acceso:** Security Groups, EC2 Instance Connect Endpoint (acceso autenticado con IAM).
 
-## 📸 Visual Evidences & Validation
+## 🔒 Seguridad y decisiones de diseño (el "porqué")
 
-### 1. High Availability / Load Balancing Response
-Cuando se accede a la URL pública del Balanceador de Carga, el tráfico se alterna dinámicamente entre ambas zonas de disponibilidad:
+1. **Aislamiento en subredes privadas.** Los servidores web no tienen IP pública, por lo que no se puede llegar a ellos directamente desde Internet (sin SSH expuesto ni superficie de ataque directa).
+2. **Un único punto de entrada público.** El ALB está en las subredes públicas y acepta HTTP por el puerto 80. Es el único componente al que pueden llegar los usuarios, y reenvía el tráfico a los servidores privados.
+3. **Tráfico de salida controlado.** Un NAT Gateway permite que los servidores privados descarguen parches del sistema e instalen Apache sin aceptar conexiones entrantes desde Internet.
+4. **Sin host bastión.** Un EC2 Instance Connect Endpoint ofrece acceso a la terminal privado y autenticado con IAM, sin una instancia extra que mantener ni pagar y sin exponer el puerto SSH.
 
-| Server A Response (eu-west-3a) | Server B Response (eu-west-3b) |
+### Security Groups (tal como se desplegaron)
+
+| Security group | Dirección | Protocolo / Puerto | Origen | Finalidad |
+| :--- | :---: | :--- | :--- | :--- |
+| `alb-public-sg` | Entrada | TCP 80 | `0.0.0.0/0`, `::/0` | Tráfico HTTP público hacia el ALB |
+| `web-private-sg` | Entrada | TCP 80 y TCP 22 | `10.16.0.0/16` (CIDR de la VPC) | HTTP desde el ALB y SSH desde el EICE |
+
+> **Nota:** limitar `web-private-sg` al CIDR completo de la VPC es sencillo, pero más amplio de lo necesario. El patrón más ajustado es referenciar security groups: puerto 80 solo desde `alb-public-sg` y puerto 22 solo desde el security group del EICE. Ver las [limitaciones](#️-limitaciones-conocidas-y-compromisos).
+
+## 🚀 Pasos del despliegue (ClickOps)
+
+1. **Red:** VPC personalizada (`10.16.0.0/16`) con 2 subredes públicas y 2 privadas repartidas entre `eu-west-3a` y `eu-west-3b`. Tabla de rutas pública → Internet Gateway; tabla de rutas privada → NAT Gateway.
+2. **Security groups:** `alb-public-sg` y `web-private-sg`, como se describe arriba.
+3. **Cómputo:** dos instancias `t2.micro`, una en cada subred privada. En cada una instalé Apache y publiqué una página que identifica al servidor y su zona, con los comandos de [`scripts/`](./scripts).
+4. **Balanceo de carga:** un Target Group (HTTP:80) con las dos instancias registradas y un ALB expuesto a Internet, de doble pila, repartido en las dos subredes públicas.
+5. **Acceso de administración:** EC2 Instance Connect Endpoint creado dentro de la VPC.
+
+## 📸 Validación y evidencias
+
+### 1. Balanceo de carga entre zonas de disponibilidad
+
+Al refrescar el nombre DNS público del ALB, las respuestas se alternan entre las dos zonas de disponibilidad:
+
+| Servidor en `eu-west-3a` | Servidor en `eu-west-3b` |
 | :---: | :---: |
-| ![Server A Response](./images/01-alb-response-server-a.png) | ![Server B Response](./images/02-alb-response-server-b.png) |
+| ![Respuesta de la zona a](./images/01-alb-response-server-a.png) | ![Respuesta de la zona b](./images/02-alb-response-server-b.png) |
 
-### 2. Target Group Health Status
-Ambos servidores privados registrados y superando correctamente las comprobaciones de estado (*Health Checks*):
+### 2. Estado del Target Group
 
-![Target Group Health](./images/03-target-group-health.png)
+Los dos servidores privados están registrados y superan las comprobaciones de estado (*health checks*):
 
-### 3. VPC Network Topology & Resource Map
-Mapa de recursos de la VPC que detalla la separación en 2 capas (subredes públicas y privadas) y el enrutamiento mediante NAT e Internet Gateways:
+![Estado del Target Group](./images/03-target-group-health.png)
 
-![VPC Resource Map](./images/04-vpc-resource-map.png)
+### 3. Mapa de recursos de la VPC
 
-## 🔮 Future Improvements
-* Migrate the ClickOps manual configuration into **Infrastructure as Code (IaC)** using Terraform.
-* Register a custom domain using **Amazon Route 53** and configure an SSL/TLS certificate via **AWS Certificate Manager (ACM)** for end-to-end HTTPS encryption.
+Dos capas (subredes públicas y privadas) y enrutamiento mediante Internet Gateway, NAT Gateway y Egress-Only IGW:
+
+![Mapa de recursos de la VPC](./images/04-vpc-resource-map.png)
+
+## 💰 Coste y limpieza
+
+Esta arquitectura contiene recursos que se cobran **por hora aunque estén inactivos**, sobre todo el **NAT Gateway** (más el tráfico procesado) y el **ALB**. Por eso eliminé todo el entorno (ALB, Target Group, instancias, NAT Gateway, IP elástica, EICE y VPC) justo después de documentarlo. Una versión en Terraform permitirá desmontarlo con un único `terraform destroy`.
+
+## ⚖️ Limitaciones conocidas y compromisos
+
+| Limitación | Impacto | Mitigación en producción |
+| :--- | :--- | :--- |
+| **Security groups limitados al CIDR de la VPC** | Cualquier recurso de la VPC podría llegar a los puertos 80 y 22 de los servidores web. | Referencias entre security groups: puerto 80 solo desde `alb-public-sg`, puerto 22 solo desde el security group del EICE. |
+| **Un único NAT Gateway** | Si cae la zona donde está, las subredes privadas de ambas zonas pierden la salida a Internet. El tráfico de entrada por el ALB no se ve afectado. | Un NAT Gateway por zona, con una tabla de rutas por zona (más coste). |
+| **Sin Auto Scaling Group** | Dos instancias lanzadas a mano: una instancia que falla se retira de la rotación pero no se reemplaza, y la capacidad no escala. | Launch Template + Auto Scaling Group repartido en las dos zonas. |
+| **Servidores sin aprovisionamiento automatizado** | Apache se instaló con comandos propios en cada instancia, sin una plantilla reproducible. | User data en un Launch Template, o una AMI preconstruida. |
+| **Solo HTTP** | El tráfico entre clientes y ALB no va cifrado. | Dominio propio + certificado de ACM, listener HTTPS en el 443 y redirección de HTTP a HTTPS. |
+| **Sin capa de datos** | Es una capa web sin estado; no hay base de datos. | Añadir una instancia RDS Multi-AZ en subredes privadas dedicadas. |
+| **Despliegue manual (ClickOps)** | No es reproducible ni está versionado. | Terraform. |
+
+## 🔮 Roadmap
+
+- [ ] Reconstruir todo el stack con **Terraform** (módulos de red, seguridad y cómputo), con referencias entre security groups en lugar de rangos CIDR.
+- [ ] Sustituir las instancias manuales por un **Launch Template + Auto Scaling Group**.
+- [ ] Añadir **HTTPS**: dominio en Route 53, certificado de ACM, listener HTTPS y redirección.
+- [ ] **NAT Gateway por zona** opcional (controlado con una variable de Terraform para equilibrar coste y resiliencia).
+- [ ] Realizar y documentar una **prueba de fallo** (parar una instancia y comprobar que el ALB sigue sirviendo desde la otra zona).
+- [ ] Observabilidad: alarmas de CloudWatch (hosts no saludables, errores 5xx) y VPC Flow Logs.
