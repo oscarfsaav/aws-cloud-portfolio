@@ -17,17 +17,15 @@ def lambda_handler(event, context):
         },
         ReturnValues="UPDATED_NEW"
     )
-    
+
     # Extraer el nuevo número
     visitas = int(response['Attributes']['cantidad'])
-    
-    # Devolver respuesta con cabeceras CORS (vital para que la web lo acepte)
+
+    # CORS lo gestiona API Gateway, por eso aquí solo se devuelve el contenido
     return {
         'statusCode': 200,
         'headers': {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Content-Type',
-            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET'
+            'Content-Type': 'application/json'
         },
         'body': json.dumps({'visitas': visitas})
     }
