@@ -1,35 +1,59 @@
-# Project 01: AWS Enterprise Governance & Security Foundation
+# Proyecto 01: Base de seguridad y control de costes en AWS
 
-## 📝 Overview
-This foundational project demonstrates the establishment of a secure, production-ready, multi-account AWS environment. It aligns with the **AWS Well-Architected Framework**, specifically focusing on the **Security** and **Cost Optimization** pillars. 
+## 📝 Visión general
 
-The primary goal of this architecture is to minimize the "blast radius" by separating operational environments, enforce Zero Trust principles for identity management, and implement basic FinOps practices before deploying any cloud resources.
+Configuración inicial de mi entorno de AWS, hecha **antes de desplegar ningún recurso**. Sigue los pilares de **Seguridad** y **Optimización de costes** del AWS Well-Architected Framework.
 
-## 🏗️ Architecture & Services Used
-* **AWS Organizations:** Multi-account management and structural isolation.
-* **AWS IAM (Identity and Access Management):** Access control, group-based policies, and custom login aliases.
-* **AWS Budgets:** Proactive financial governance and cost anomaly detection.
-* **AWS Billing and Cost Management:** Consolidated billing and IAM access delegation.
+El objetivo es reducir el "radio de impacto" de cualquier error separando los entornos de trabajo, aplicar buenas prácticas de gestión de identidades (MFA, grupos de IAM y no usar el usuario root) y poner controles básicos de costes (FinOps) desde el primer día.
 
-## 🚀 Key Implementations
+## 🏗️ Arquitectura y servicios utilizados
 
-### 1. Multi-Account Strategy & Blast Radius Isolation
-* Implemented **AWS Organizations** to transition from a single-account setup to a Management/Member account hierarchy.
-* Created a dedicated Member Account (`Portfolio-Dev-Cloud`) to isolate development and portfolio workloads from the Management Account, ensuring a secure blast radius and clean environment separation.
-* Enabled **Consolidated Billing** to centralize cost tracking at the Organizational level.
+* **AWS Organizations:** gestión multicuenta y aislamiento estructural.
+* **AWS IAM (Identity and Access Management):** control de acceso, políticas por grupo y alias de inicio de sesión.
+* **AWS Budgets:** control proactivo del gasto y alertas ante costes inesperados.
+* **AWS Billing and Cost Management:** facturación consolidada y acceso de IAM a la información de costes.
 
-### 2. Financial Governance (FinOps)
-* Delegated billing access to IAM roles to ensure operational admins have visibility into resource costs.
-* Configured a **Zero-Spend Budget** ($1.00 threshold) in the Management Account using AWS Budgets to monitor the unified cost of the entire Organization.
-* Automated email alerts triggered upon exceeding the Free Tier limits or generating unexpected billing.
+## 🚀 Qué se implementó
 
-### 3. Identity & Access Management (Zero Trust)
-* **Root Account Securitization:** Enforced hardware/virtual Multi-Factor Authentication (MFA) on the Root user of both the Management and Member accounts. Exiled Root accounts from daily operations.
-* **Group-Based Access:** Created a `DevOps-Admins` IAM User Group attached to the `AdministratorAccess` managed policy, adhering to the best practice of avoiding direct policy attachments to individual users.
-* **Operational Identity:** Provisioned a dedicated IAM User for daily operations, secured with an independent MFA token.
-* **Custom Login URL:** Configured an Account Alias (`portfolio-dev-cloud`) to provide a standardized, human-readable console sign-in link for IAM users.
+### 1. Estrategia multicuenta y aislamiento del radio de impacto
+* Usé **AWS Organizations** para pasar de una cuenta única a una jerarquía con una cuenta de administración y una cuenta miembro.
+* Creé una cuenta miembro dedicada (`Portfolio-Dev-Cloud`) para separar los proyectos del portfolio de la cuenta de administración, y mantener cada entorno limpio y aislado.
+* Activé la **facturación consolidada** para centralizar el seguimiento de costes a nivel de la organización.
 
-## 🧠 Lessons Learned & Best Practices
-* **Never use the Root user** for daily tasks; always rely on IAM identities with delegated permissions.
-* Budgets in AWS Organizations do not visually inherit in Member Accounts, but a global budget in the Management Account successfully monitors the aggregate spend.
-* Establishing cost guardrails *before* deploying infrastructure is critical to prevent unexpected charges, especially when working with self-managed cloud environments.
+### 2. Control de costes (FinOps)
+* Di acceso a la información de facturación a las identidades de IAM, para que los administradores operativos vean los costes de los recursos.
+* Configuré un **presupuesto mensual de 20 USD** (`Monthly-Cost-Budget`) en la cuenta de administración con AWS Budgets, para vigilar el coste conjunto de toda la organización.
+* Configuré dos alertas por email: una cuando el **coste real supera 2 USD** y otra cuando la **previsión de gasto supera el 100 %** del presupuesto.
+
+### 3. Identidad y acceso (IAM)
+* **Protección del usuario root:** activé la autenticación multifactor (MFA) en el usuario root de la cuenta de administración y de la cuenta miembro, y dejé de usarlos para el trabajo diario.
+* **Acceso por grupos:** creé un grupo de IAM `DevOps-Admins` con la política gestionada `AdministratorAccess`, siguiendo la buena práctica de no asignar políticas directamente a usuarios individuales.
+* **Identidad para el día a día:** creé un usuario de IAM dedicado a las tareas diarias, protegido con su propio MFA.
+* **URL de acceso personalizada:** configuré un alias de cuenta (`portfolio-dev-cloud`) para tener un enlace de inicio de sesión legible para los usuarios de IAM.
+
+## 📸 Evidencias
+
+*(Los identificadores de cuenta y los emails se han tapado en las capturas.)*
+
+### 1. Organización con la cuenta de administración y la cuenta miembro
+![Estructura de la organización en AWS Organizations](images/01-organizations-accounts.png)
+
+### 2. Presupuesto mensual con alertas
+![Presupuesto mensual en AWS Budgets](images/02-monthly-cost-budget.png)
+
+### 3. Grupo de IAM con su política
+![Grupo DevOps-Admins con la política AdministratorAccess](images/03-iam-group-devops-admins.png)
+
+## 🧠 Lecciones aprendidas y buenas prácticas
+* **No usar nunca el usuario root** para las tareas diarias: se trabaja siempre con identidades de IAM.
+* Los presupuestos de AWS Organizations no se muestran en las cuentas miembro, pero un presupuesto global en la cuenta de administración sí controla el gasto agregado.
+* Poner límites de coste *antes* de desplegar infraestructura es clave para evitar cargos inesperados, sobre todo al trabajar con entornos propios.
+* Los umbrales de las alertas hay que dimensionarlos: uno alto tarda días en avisar de un recurso que se queda encendido y cobra por horas. Por eso añadí una alerta temprana de coste real y otra sobre la previsión.
+
+## ⚖️ Limitaciones conocidas
+
+| Tema | Estado actual | Qué haría en un entorno de empresa |
+| :--- | :--- | :--- |
+| Permisos del usuario diario | El grupo `DevOps-Admins` tiene `AdministratorAccess`. Es cómodo para una cuenta personal, pero concede más permisos de los necesarios. | Políticas ajustadas a cada rol y mínimo privilegio. |
+| Usuarios de IAM con credenciales permanentes | El acceso diario usa un usuario de IAM con MFA. | **IAM Identity Center**, con credenciales temporales y acceso centralizado. |
+| Controles a nivel de organización | Fuera del alcance de este proyecto. | Políticas de control de servicios (SCP) y registro de auditoría con CloudTrail para toda la organización. |
