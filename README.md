@@ -20,15 +20,15 @@ Mi formación en cloud es autodidacta, a través del curso y los laboratorios de
 | 01 | [Base de seguridad y control de costes de la cuenta](./01-enterprise-governance-security) | Organizations, IAM, Budgets | Consola | ✅ Configurado |
 | 02 | [Cloud Resume Challenge](./02-cloud-resume-challenge) | Route 53, ACM, CloudFront, S3, API Gateway, Lambda, DynamoDB, IAM | Consola | ✅ En producción en [oscarfragueiro.com](https://oscarfragueiro.com) |
 | 03 | [Arquitectura web de alta disponibilidad](./03-high-availability-architecture) | VPC, ALB, EC2, NAT Gateway, Security Groups, EC2 Instance Connect Endpoint | Consola | 📄 Documentado (entorno eliminado para evitar costes) |
+| 04 | [Alta disponibilidad con Terraform](./04-terraform-ha-architecture) | VPC, ALB, Auto Scaling Group, ACM, Route 53, Systems Manager, IAM | Terraform | 📄 Documentado, con prueba de fallo (entorno eliminado con `terraform destroy`) |
 
 ## 🧭 Cómo trabajo
 
-- **Primero a mano, después automatizado.** Despliego cada arquitectura desde la consola para entender cómo se comporta cada servicio, y después la reconstruyo con infraestructura como código.
+- **Primero a mano, después automatizado.** Despliego cada arquitectura desde la consola para entender cómo se comporta cada servicio, y después la reconstruyo con infraestructura como código (el proyecto 04 es la versión en Terraform del 03, que corrige varias de las limitaciones de aquel).
 - **Cada proyecto explica el porqué.** Los README incluyen el diagrama, las decisiones de seguridad y diseño, los problemas que encontré, las evidencias y las **limitaciones conocidas** de lo que construí.
 - **Costes bajo control.** Los entornos que se cobran por hora se eliminan en cuanto están documentados.
 
 ## 🔮 Próximos pasos
 
-- Infraestructura como código con **Terraform**.
+- Una aplicación backend completa en AWS (**Java/Spring Boot + PostgreSQL**) con contenedores, base de datos gestionada, secretos y alarmas, todo con Terraform.
 - **CI/CD** con GitHub Actions.
-- Una aplicación backend completa desplegada en AWS.
