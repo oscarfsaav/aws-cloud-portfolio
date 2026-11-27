@@ -1,548 +1,451 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Óscar Fragueiro Saavedra | Cloud Engineer Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Óscar Fragueiro Saavedra | Junior Cloud Engineer</title>
+    <meta name="description" content="Junior Cloud Engineer con la certificación AWS Solutions Architect Associate. Antes fui profesor de inglés. Proyectos en AWS con Terraform, documentados con diagramas y evidencias.">
+    <meta name="theme-color" content="#123a73">
+    <meta name="color-scheme" content="light">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Óscar Fragueiro Saavedra | Junior Cloud Engineer">
+    <meta property="og:description" content="AWS Solutions Architect Associate. Proyectos en AWS con Terraform, alta disponibilidad y arquitecturas serverless.">
+    <meta property="og:url" content="https://oscarfragueiro.com">
+    <meta property="og:image" content="https://oscarfragueiro.com/assets/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23123a73'/%3E%3Cpath d='M12 44h40M12 32h40M12 20h40' stroke='%238fb0e6' stroke-width='2'/%3E%3Ctext x='32' y='41' font-family='Arial' font-size='26' font-weight='700' text-anchor='middle' fill='white'%3EOF%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&family=Literata:opsz,wght@7..72,400..700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            /* Variables Dark/Cyberpunk Theme */
-            --bg-color: #050a14;
-            --bg-panel: #0d1526;
-            --text-main: #a9b7c6;
-            --text-heading: #e6f1ff;
-            --accent-cyan: #00f3ff;
-            --accent-green: #00ff66;
-            --accent-purple: #bc13fe;
-            --border-color: #1e2d4a;
-            --scanline: rgba(0, 243, 255, 0.02);
-            --shadow-cyan: 0 0 10px rgba(0, 243, 255, 0.3);
-            --shadow-purple: 0 0 10px rgba(188, 19, 254, 0.3);
+            --paper: #f3f4f1;
+            --ink: #14202e;
+            --muted: #4f5b69;
+            --rule: #cfd5d2;
+            --link: #17489a;
+            --blue: #123a73;
+            --line: #8fb0e6;
+            --blue-text: #eaf1ff;
+            --sans: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+            --serif: 'Literata', Georgia, 'Times New Roman', serif;
+            --gutter: 200px;
         }
 
-        [data-theme="light"] {
-            /* Variables Light Theme */
-            --bg-color: #f0f2f5;
-            --bg-panel: #ffffff;
-            --text-main: #4a5568;
-            --text-heading: #1a202c;
-            --accent-cyan: #0066cc;
-            --accent-green: #059669;
-            --accent-purple: #7c3aed;
-            --border-color: #cbd5e1;
-            --scanline: rgba(0, 0, 0, 0.02);
-            --shadow-cyan: 0 4px 6px rgba(0, 102, 204, 0.1);
-            --shadow-purple: 0 4px 6px rgba(124, 58, 237, 0.1);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Fira Code', monospace; /* Fuente de consola por defecto */
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            padding: 2rem 1rem;
-            position: relative;
+            font-family: var(--serif);
+            font-size: 1.0625rem;
+            line-height: 1.7;
+            color: var(--ink);
+            background: var(--paper);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Efecto Scanline sutil para el fondo */
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: repeating-linear-gradient(0deg, transparent, transparent 2px, var(--scanline) 2px, var(--scanline) 4px);
-            pointer-events: none;
-            z-index: 9999;
-        }
+        a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+        a:hover { text-decoration-thickness: 2px; }
+        a:focus-visible { outline: 3px solid var(--link); outline-offset: 3px; }
 
-        p, .font-sans {
-            font-family: 'Inter', sans-serif;
-        }
+        .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+        /* Dos columnas: margen a la izquierda, texto a la derecha */
+        .row { display: grid; grid-template-columns: var(--gutter) minmax(0, 1fr); column-gap: 48px; }
 
-        /* Falsa barra superior de ventana (Mac/Linux style) */
-        .window-bar {
-            background: #1a202c;
-            padding: 0.5rem 1rem;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-        }
+        /* ---------- Presentación ---------- */
+        .hero { padding: 72px 0 64px; }
 
-        [data-theme="light"] .window-bar {
-            background: #e2e8f0;
-        }
-
-        .dots {
-            display: flex;
-            gap: 8px;
-        }
-
-        .dot {
-            width: 12px; height: 12px; border-radius: 50%;
-        }
-        .dot.red { background: #ff5f56; }
-        .dot.yellow { background: #ffbd2e; }
-        .dot.green { background: #27c93f; }
-
-        .window-title {
-            margin: 0 auto;
-            color: #8892b0;
-            font-size: 0.85rem;
-        }
-
-        .content {
-            padding: 2rem 3rem;
-        }
-
-        /* Controles */
-        .controls {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .btn {
-            font-family: 'Fira Code', monospace;
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-theme {
-            border: 1px solid var(--accent-cyan);
-            color: var(--accent-cyan);
-        }
-        .btn-theme:hover {
-            background: var(--accent-cyan);
-            color: var(--bg-color);
-            box-shadow: var(--shadow-cyan);
-        }
-
-        .btn-pdf {
-            border: 1px solid var(--accent-purple);
-            color: var(--accent-purple);
-        }
-        .btn-pdf:hover {
-            background: var(--accent-purple);
-            color: var(--bg-color);
-            box-shadow: var(--shadow-purple);
-        }
-
-        /* Prompt Style */
-        .prompt {
-            color: var(--accent-green);
-            font-weight: 600;
-        }
-        .command {
-            color: var(--accent-cyan);
-        }
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 1.2em;
-            background-color: var(--accent-cyan);
-            vertical-align: middle;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        /* Perfil */
-        .profile {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px dashed var(--border-color);
-        }
-
-        .profile-img {
-            width: 140px;
-            height: 140px;
-            border-radius: 12px; /* Más cuadrado/tech */
-            border: 2px solid var(--border-color);
+        .photo {
+            width: 100%;
+            aspect-ratio: 4 / 5;
             object-fit: cover;
-            filter: grayscale(20%);
-            transition: all 0.3s;
+            object-position: 50% 20%;
+            display: block;
+            background: var(--rule);
         }
 
-        .profile-img:hover {
-            filter: grayscale(0%);
-            border-color: var(--accent-cyan);
-            box-shadow: var(--shadow-cyan);
+        h1 {
+            font-family: var(--sans);
+            font-stretch: 118%;
+            font-weight: 700;
+            font-size: clamp(2.3rem, 5.2vw, 3.7rem);
+            line-height: 1.04;
+            letter-spacing: -0.015em;
         }
 
-        .profile-info h1 {
-            color: var(--text-heading);
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
+        .role {
+            font-family: var(--sans);
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-top: 18px;
         }
+        .role small { display: block; font-size: 0.95rem; font-weight: 400; color: var(--muted); margin-top: 2px; }
 
-        .profile-info h2 {
-            color: var(--text-main);
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 1rem;
-        }
+        .statement { font-size: 1.22rem; line-height: 1.65; max-width: 56ch; margin-top: 28px; }
 
-        .links a {
-            color: var(--accent-cyan);
-            margin-right: 1.5rem;
+        .links { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px; margin-top: 32px; font-family: var(--sans); font-weight: 500; }
+
+        .cv {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 11px 20px;
             text-decoration: none;
-            font-size: 0.9rem;
-        }
-        
-        .links a:hover {
-            text-decoration: underline;
-            text-shadow: 0 0 8px var(--accent-cyan);
-        }
-
-        /* Secciones Generales */
-        .section-block {
-            margin-bottom: 3rem;
-        }
-
-        .section-block h3 {
-            color: var(--text-heading);
-            margin-bottom: 1.5rem;
-            font-size: 1.2rem;
-        }
-
-        .section-block p {
-            margin-bottom: 1rem;
-        }
-
-        /* Experiencia */
-        .job {
-            margin-bottom: 1.5rem;
-            padding-left: 1.5rem;
-            border-left: 2px solid var(--border-color);
-            position: relative;
-        }
-
-        .job::before {
-            content: '>';
-            position: absolute;
-            left: -9px;
-            top: 0;
-            color: var(--accent-purple);
-            background: var(--bg-panel);
-            padding: 0 2px;
-        }
-
-        .job-title {
-            color: var(--accent-cyan);
             font-weight: 600;
+            border-radius: 2px;
+        }
+        .cv:hover { background: var(--blue); text-decoration: none; }
+        .cv:focus-visible { outline-color: var(--ink); }
+
+        /* ---------- Diagrama: el recorrido de esta página ---------- */
+        .trace {
+            background-color: var(--blue);
+            background-image:
+                linear-gradient(rgba(143, 176, 230, 0.13) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(143, 176, 230, 0.13) 1px, transparent 1px);
+            background-size: 32px 32px;
+            color: var(--blue-text);
+            padding: 64px 0 72px;
         }
 
-        .job-date {
-            font-size: 0.8rem;
-            color: #8892b0;
-            margin-bottom: 0.5rem;
+        .trace h2 {
+            font-family: var(--sans);
+            font-stretch: 112%;
+            font-weight: 700;
+            font-size: clamp(1.6rem, 3.4vw, 2.2rem);
+            line-height: 1.15;
+            max-width: 22ch;
         }
+        .trace .intro { max-width: 58ch; margin-top: 16px; color: #c9d8f3; }
 
-        /* Grid de Certificaciones */
-        .certs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .cert-card {
-            background: rgba(0,0,0,0.2);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        [data-theme="light"] .cert-card {
-            background: #f8fafc;
-        }
-
-        .cert-card:hover {
-            border-color: var(--accent-purple);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-purple);
-        }
-
-        .cert-status {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-        }
-
-        .status-done {
-            color: var(--accent-green);
-            background: rgba(0, 255, 102, 0.1);
-            border: 1px solid var(--accent-green);
-        }
-
-        .status-progress {
-            color: var(--accent-cyan);
-            background: rgba(0, 243, 255, 0.1);
-            border: 1px solid var(--accent-cyan);
-        }
-
-        .cert-title {
-            color: var(--text-heading);
+        .lane { margin-top: 44px; }
+        .lane h3 {
+            font-family: var(--sans);
             font-size: 1rem;
-            margin-bottom: 1rem;
-            margin-top: 1rem;
             font-weight: 600;
+            color: var(--line);
+            margin-bottom: 14px;
         }
 
-        .cert-id {
-            font-size: 0.75rem;
-            color: #8892b0;
-            background: var(--bg-color);
-            padding: 0.4rem;
-            border-radius: 4px;
-            display: inline-block;
-            border: 1px solid var(--border-color);
-            word-break: break-all;
+        .steps { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 34px; counter-reset: step; }
+
+        .steps li {
+            counter-increment: step;
+            position: relative;
+            border: 1px solid rgba(143, 176, 230, 0.7);
+            background: rgba(10, 36, 78, 0.55);
+            padding: 16px 16px 18px;
+            font-size: 0.93rem;
+            line-height: 1.55;
+        }
+        .steps li::before {
+            content: counter(step);
+            display: block;
+            font-family: var(--sans);
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--line);
+            margin-bottom: 6px;
+        }
+        .steps b { display: block; font-family: var(--sans); font-stretch: 108%; font-weight: 700; font-size: 1.08rem; color: #fff; margin-bottom: 4px; }
+
+        /* Conector entre pasos */
+        .steps li:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 34px;
+            height: 1px;
+            background: var(--line);
+            transform-origin: left center;
+        }
+        .steps li:not(:last-child)::before { /* el número sigue siendo legible */ }
+
+        .count { display: none; margin-top: 10px; font-family: var(--sans); color: #fff; }
+        .count.on { display: block; }
+        .count strong { display: block; font-stretch: 118%; font-weight: 800; font-size: 2.1rem; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+        .count span { font-size: 0.85rem; color: #c9d8f3; }
+
+        /* Única animación de la página: el recorrido se dibuja al cargar */
+        @media (prefers-reduced-motion: no-preference) {
+            .steps li { opacity: 0; animation: appear 0.5s ease-out forwards; animation-delay: calc(var(--i) * 170ms + 250ms); }
+            .steps li:not(:last-child)::after { transform: scaleX(0); animation: draw 0.4s ease-out forwards; animation-delay: calc(var(--i) * 170ms + 520ms); }
+            .lane + .lane .steps li { animation-delay: calc(var(--i) * 170ms + 1150ms); }
+            .lane + .lane .steps li:not(:last-child)::after { animation-delay: calc(var(--i) * 170ms + 1420ms); }
+        }
+        @keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @keyframes draw { to { transform: scaleX(1); } }
+
+        /* ---------- Secciones ---------- */
+        section.block { padding: 64px 0 0; }
+        section.block:last-of-type { padding-bottom: 72px; }
+
+        .block h2 {
+            font-family: var(--sans);
+            font-stretch: 108%;
+            font-weight: 700;
+            font-size: 1.15rem;
+            line-height: 1.3;
+            padding-top: 4px;
+            position: sticky;
+            top: 24px;
+            align-self: start;
         }
 
-        .cert-id span {
-            color: var(--accent-cyan);
-        }
+        .item { padding: 0 0 30px; margin-bottom: 30px; border-bottom: 1px solid var(--rule); }
+        .item:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
 
-        /* Footer y Contador */
-        footer {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px dashed var(--border-color);
-            text-align: center;
-            font-size: 0.85rem;
-        }
+        h3.title { font-family: var(--sans); font-stretch: 108%; font-weight: 700; font-size: 1.35rem; line-height: 1.25; }
+        .item p { margin-top: 8px; max-width: 62ch; }
+        .when { font-family: var(--sans); font-size: 0.92rem; color: var(--muted); margin-top: 2px; }
+        .stack { font-family: var(--sans); font-size: 0.92rem; color: var(--muted); margin-top: 10px; max-width: 62ch; }
+        .go { display: inline-block; margin-top: 10px; font-family: var(--sans); font-weight: 600; }
 
-        .counter-box {
-            margin-top: 1rem;
-            display: inline-block;
-        }
+        .cert { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 24px; align-items: baseline; }
+        .cert p { grid-column: 1; margin-top: 2px; font-size: 0.98rem; color: var(--muted); }
+        .cert .go { grid-column: 2; grid-row: 1; margin-top: 0; white-space: nowrap; }
+        .cert h3.title { font-size: 1.15rem; }
 
-        @media (max-width: 768px) {
-            .content { padding: 1.5rem; }
-            .profile { flex-direction: column; text-align: center; }
-            .controls { justify-content: center; }
+        .item ul { margin: 12px 0 0 1.1em; max-width: 62ch; }
+        .item li { margin-bottom: 8px; }
+
+        .langs { font-family: var(--sans); display: flex; flex-wrap: wrap; gap: 6px 36px; }
+        .langs span { color: var(--muted); }
+        .langs strong { color: var(--ink); font-weight: 600; margin-right: 6px; }
+
+        footer { border-top: 1px solid var(--rule); padding: 28px 0 56px; font-family: var(--sans); font-size: 0.92rem; color: var(--muted); }
+
+        /* ---------- Móvil y tableta ---------- */
+        @media (max-width: 860px) {
+            .row { grid-template-columns: minmax(0, 1fr); }
+            .hero { padding: 40px 0 48px; }
+            .photo { width: 140px; margin-bottom: 26px; }
+            .block h2 { position: static; margin-bottom: 22px; }
+            section.block { padding-top: 48px; }
+
+            .steps { grid-template-columns: minmax(0, 1fr); gap: 34px 0; }
+            .steps li:not(:last-child)::after { top: 100%; left: 24px; width: 1px; height: 34px; transform-origin: top center; }
+            @media (prefers-reduced-motion: no-preference) {
+                .steps li:not(:last-child)::after { transform: scaleY(0); animation-name: draw-y; }
+            }
+            .cert { grid-template-columns: minmax(0, 1fr); }
+            .cert .go { grid-column: 1; grid-row: auto; margin-top: 6px; }
+        }
+        @keyframes draw-y { to { transform: scaleY(1); } }
+
+        @media print {
+            .trace, footer, .links { display: none; }
+            body { background: #fff; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Barra de Ventana OS -->
-        <div class="window-bar">
-            <div class="dots">
-                <div class="dot red"></div>
-                <div class="dot yellow"></div>
-                <div class="dot green"></div>
-            </div>
-            <div class="window-title">bash - oscar_fragueiro - 80x24</div>
-        </div>
-
-        <div class="content">
-            <div class="controls">
-                <button id="theme-toggle" class="btn btn-theme">Light Mode</button>
-                <a href="assets/mi-cv.pdf" target="_blank" class="btn btn-pdf">./download_cv.pdf</a>
-            </div>
-
-            <div class="profile">
-                <!-- Imagen en bucket S3 -->
-                <img src="assets/perfil.jpeg" alt="Óscar Fragueiro" class="profile-img" onerror="this.src='https://via.placeholder.com/140/0d1526/00f3ff?text=O.F.'">
-                <div class="profile-info">
-                    <h1><span class="prompt">~ $</span> <span class="command">whoami</span></h1>
-                    <h1 style="font-size: 1.8rem; color: var(--accent-cyan); margin-bottom: 0;">Óscar Fragueiro Saavedra</h1>
-                    <h2>Future AWS Solutions Architect | Cloud & DevOps Engineer</h2>
-                    <div class="links">
-                        <a href="mailto:oscarfragueiro7@gmail.com">[ Email ]</a>
-                        <a href="https://linkedin.com/in/oscarfragueiro" target="_blank">[ LinkedIn ]</a>
-                        <a href="https://github.com/oscarfsaav" target="_blank">[ GitHub ]</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-block">
-                <h3><span class="prompt">~ $</span> cat extracto.txt<span class="cursor"></span></h3>
-                <p class="font-sans">
-                    Desarrollador de Aplicaciones Multiplataforma (DAM) en transición hacia el ecosistema Cloud y DevOps. 
-                    Tengo una sólida base técnica en backend (Java, Python, REST APIs) y administración Linux adquirida en entornos de producción. 
-                    Mi trayectoria previa como docente me ha dotado de un nivel de inglés C2, alta capacidad para redactar documentación 
-                    técnica y facilidad para colaborar en equipos multidisciplinares. Actualmente, estoy construyendo mi <i>career path</i> 
-                    especializándome en automatización y arquitecturas en la nube (AWS & Terraform).
+    <header class="hero">
+        <div class="wrap row">
+            <img class="photo" src="assets/perfil.jpeg" alt="Retrato de Óscar Fragueiro" width="413" height="531">
+            <div>
+                <h1>Óscar Fragueiro Saavedra</h1>
+                <p class="role">Junior Cloud Engineer, Madrid
+                    <small>AWS Certified Solutions Architect – Associate</small>
                 </p>
+                <p class="statement">
+                    Fui profesor de inglés durante ocho años. Ahora diseño y despliego infraestructura en AWS,
+                    y la documento para que cualquiera pueda seguirla. Perfil enfocado a puestos de 
+                    Cloud Support Engineer, Junior Cloud Engineer o DevOps junior en Madrid, en remoto o en híbrido.
+                </p>
+                <nav class="links" aria-label="Contacto y enlaces">
+                    <a class="cv" href="assets/mi-cv.pdf" target="_blank" rel="noopener">Descargar CV (PDF)</a>
+                    <a href="https://www.linkedin.com/in/oscarfragueiro" target="_blank" rel="noopener">LinkedIn</a>
+                    <a href="https://github.com/oscarfsaav" target="_blank" rel="noopener">GitHub</a>
+                    <a href="mailto:oscarfragueiro7@gmail.com">oscarfragueiro7@gmail.com</a>
+                </nav>
             </div>
-
-            <div class="section-block">
-                <h3><span class="prompt">~ $</span> ls -la ./experiencia/</h3>
-                
-                <div class="job">
-                    <div class="job-title">Software Developer Intern @ Aerín Sistemas</div>
-                    <div class="job-date">May 2024 - Jun 2026</div>
-                    <p class="font-sans">
-                        Despliegue y configuración de gestores EDI en Linux en entornos de producción. Desarrollo de endpoints REST (Django DRF) y creación de importadores masivos de clientes en Python, implementando automatización de credenciales seguras y reportes de errores.
-                    </p>
-                </div>
-                
-                <div class="job">
-                    <div class="job-title">Profesor de Inglés (Secondary & IB) @ Varios Centros</div>
-                    <div class="job-date">Sept 2016 - Jul 2024</div>
-                    <p class="font-sans">
-                        Gestión integral de grupos educativos (Nivel C2). Desarrollo de excepcionales habilidades de comunicación, estructuración de información compleja para públicos no técnicos y resolución de problemas bajo presión en entornos con estándares internacionales.
-                    </p>
-                </div>
-            </div>
-
-            <div class="section-block">
-                <h3><span class="prompt">~ $</span> ./verify_certs.sh</h3>
-                
-                <div class="certs-grid">
-                    <!-- AWS SAA -->
-                    <div class="cert-card">
-                        <span class="cert-status status-progress">In Progress</span>
-                        <div class="cert-title">AWS Certified Solutions Architect – Associate (SAA-C03)</div>
-                        <p class="font-sans" style="font-size: 0.85rem; color: var(--text-main);">Diseño de arquitecturas resilientes, seguras y de alta disponibilidad.</p>
-                    </div>
-
-                    <!-- Terraform -->
-                    <div class="cert-card">
-                        <span class="cert-status status-progress">In Progress</span>
-                        <div class="cert-title">HashiCorp Certified: Terraform Associate 004</div>
-                        <p class="font-sans" style="font-size: 0.85rem; color: var(--text-main);">Automatización de despliegues e Infraestructura como Código (IaC).</p>
-                    </div>
-
-                    <!-- AWS CCP -->
-                    <div class="cert-card">
-                        <span class="cert-status status-done">Verified</span>
-                        <div class="cert-title">AWS Certified Cloud Practitioner</div>
-                        <div class="cert-id">ID: <span>8bd07fc2e98940299f6442a340ed9ad5</span></div>
-                    </div>
-
-                    <!-- Java -->
-                    <div class="cert-card">
-                        <span class="cert-status status-done">Verified</span>
-                        <div class="cert-title">Java Certified Foundations Associate</div>
-                        <div class="cert-id">ID: <span>101655376JAVA8OJA</span></div>
-                    </div>
-
-                    <!-- Oracle DB -->
-                    <div class="cert-card">
-                        <span class="cert-status status-done">Verified</span>
-                        <div class="cert-title">Oracle Certified Foundations Associate, DB</div>
-                        <div class="cert-id">ID: <span>101655376ODB12COJA</span></div>
-                    </div>
-
-                    <!-- Idioma -->
-                    <div class="cert-card">
-                        <span class="cert-status status-done">Verified</span>
-                        <div class="cert-title">telc Deutsch B1 Zertifikat</div>
-                        <div class="cert-id">Teilnehmernummer: <span>0548802</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="section-block">
-                <h3><span class="prompt">~ $</span> cd ./proyectos && ls</h3>
-                
-                <div class="job">
-                    <div class="job-title">The Cloud Resume Challenge (Este sitio web)</div>
-                    <p class="font-sans" style="font-size: 0.9rem;">
-                        Implementación completa de un currículum interactivo servido desde un bucket <strong>S3</strong>, 
-                        distribuido globalmente vía <strong>CloudFront</strong>, con dominio en <strong>Route 53</strong> y certificado SSL. 
-                        La infraestructura backend (Serverless) utiliza <strong>API Gateway, AWS Lambda (Python) y DynamoDB</strong>.
-                    </p>
-                </div>
-
-                <div class="job">
-                    <div class="job-title">Ecosistema Financiero Multiplataforma (Java/Spring)</div>
-                    <p class="font-sans" style="font-size: 0.9rem;">
-                        Backend transaccional diseñado con <strong>Java, Spring Boot y PostgreSQL</strong>. Integración de seguridad con 
-                        <strong>JWT</strong>. Implementación de motor de netting (optimización de transferencias) y transacciones atómicas.
-                    </p>
-                </div>
-            </div>
-
-            <footer>
-                <p>> System running smoothly. Built by Óscar Fragueiro.</p>
-                <div class="counter-box">
-                    <span class="command">DynamoDB.get_item('visitors'): </span>
-                    <span id="visitor-count" style="color: var(--accent-purple); font-weight: bold;">--</span>
-                </div>
-            </footer>
-
         </div>
-    </div>
+    </header>
+
+    <section class="trace" aria-labelledby="trace-title">
+        <div class="wrap">
+            <h2 id="trace-title">Así ha llegado esta página hasta ti</h2>
+            <p class="intro">
+                No es una maqueta: esta web es mi Cloud Resume Challenge, desplegado en AWS.
+                Cada vez que alguien la abre ocurren dos recorridos.
+            </p>
+
+            <div class="lane">
+                <h3>Cargar la página</h3>
+                <ol class="steps">
+                    <li style="--i:0"><b>Tu navegador</b>Pide oscarfragueiro.com.</li>
+                    <li style="--i:1"><b>Route 53</b>Traduce el nombre del dominio a la dirección de CloudFront.</li>
+                    <li style="--i:2"><b>CloudFront</b>Cifra la conexión con HTTPS y sirve la copia más cercana a ti.</li>
+                    <li style="--i:3"><b>S3</b>Guarda los archivos de la página. Es privado: solo CloudFront puede leerlo.</li>
+                </ol>
+            </div>
+
+            <div class="lane">
+                <h3>Contar la visita</h3>
+                <ol class="steps">
+                    <li style="--i:0"><b>Tu navegador</b>Ejecuta un pequeño script al cargar la página.</li>
+                    <li style="--i:1"><b>API Gateway</b>Recibe la petición. Solo acepta las que vienen de mi dominio.</li>
+                    <li style="--i:2"><b>Lambda</b>Una función en Python que suma una visita.</li>
+                    <li style="--i:3"><b>DynamoDB</b>Guarda el total.
+                        <span class="count" id="visitor-box"><strong id="visitor-count"></strong><span>visitas hasta ahora, contándote a ti</span></span>
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <main>
+        <section class="block" id="proyectos">
+            <div class="wrap row">
+                <h2>Proyectos</h2>
+                <div>
+                    <article class="item">
+                        <h3 class="title">Alta disponibilidad en AWS con Terraform</h3>
+                        <p>Una capa web repartida en dos zonas de disponibilidad, con balanceador y HTTPS, que escala según la carga de CPU. Las máquinas no tienen SSH abierto: se accede con Systems Manager. Está definida con Terraform (36 recursos) y la probé eliminando una instancia a propósito: el sistema lanzó la sustituta en cuestión de segundos.</p>
+                        <p class="stack">Terraform, VPC, ALB, Auto Scaling, ACM, Route 53, Systems Manager.</p>
+                        <a class="go" href="https://github.com/oscarfsaav/aws-cloud-portfolio/tree/main/04-terraform-ha-architecture" target="_blank" rel="noopener">Diagrama, código y evidencias en GitHub</a>
+                    </article>
+
+                    <article class="item">
+                        <h3 class="title">Cloud Resume Challenge: esta web</h3>
+                        <p>El recorrido de arriba, construido de verdad. Permisos de IAM de mínimo privilegio para la función Lambda y CORS limitado a mis dominios. El README cuenta los errores que cometí por el camino y cómo los resolví.</p>
+                        <p class="stack">S3, CloudFront, API Gateway, Lambda (Python), DynamoDB, Route 53, ACM, IAM.</p>
+                        <a class="go" href="https://github.com/oscarfsaav/aws-cloud-portfolio/tree/main/02-cloud-resume-challenge" target="_blank" rel="noopener">README en GitHub</a>
+                    </article>
+
+                    <article class="item">
+                        <h3 class="title">Arquitectura de alta disponibilidad, desde la consola</h3>
+                        <p>Un despliegue multi-AZ hecho a mano para entender cada pieza: subredes públicas y privadas, balanceador de carga, servidores sin IP pública y salida a Internet con NAT Gateway. Lo automaticé después con Terraform; el README recoge las limitaciones de la versión manual.</p>
+                        <p class="stack">VPC, EC2, ALB, NAT Gateway, Security Groups, EC2 Instance Connect Endpoint.</p>
+                        <a class="go" href="https://github.com/oscarfsaav/aws-cloud-portfolio/tree/main/03-high-availability-architecture" target="_blank" rel="noopener">Diagrama y evidencias en GitHub</a>
+                    </article>
+
+                    <article class="item">
+                        <h3 class="title">Seguridad y control de costes antes de desplegar nada</h3>
+                        <p>Cuenta de administración y cuenta miembro con AWS Organizations, usuario root protegido con MFA, acceso por grupos de IAM y un presupuesto mensual de 20 USD con alertas por correo.</p>
+                        <p class="stack">Organizations, IAM, Budgets.</p>
+                        <a class="go" href="https://github.com/oscarfsaav/aws-cloud-portfolio/tree/main/01-enterprise-governance-security" target="_blank" rel="noopener">README en GitHub</a>
+                    </article>
+
+                    <article class="item">
+                        <h3 class="title">Piggybank: backend financiero en Java</h3>
+                        <p>API transaccional con Spring Boot y PostgreSQL. Autenticación con JWT, un motor de netting que reduce el número de transferencias entre usuarios y transacciones atómicas.</p>
+                        <p class="stack">Java, Spring Boot, PostgreSQL, JWT.</p>
+                        <a class="go" href="https://github.com/oscarfsaav/piggybank-finance-ecosystem" target="_blank" rel="noopener">Código en GitHub</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="block" id="certificaciones">
+            <div class="wrap row">
+                <h2>Certificaciones</h2>
+                <div>
+                    <article class="item cert">
+                        <h3 class="title">AWS Certified Solutions Architect – Associate</h3>
+                        <a class="go" href="https://cp.certmetrics.com/amazon/en/public/verify/credential/b6397b388fb341919f9e0fa7841f76ec" target="_blank" rel="noopener">Verificar credencial</a>
+                        <p>Obtenida en noviembre de 2026. Diseño de arquitecturas resilientes, seguras y de alta disponibilidad.</p>
+                    </article>
+                    <article class="item cert">
+                        <h3 class="title">AWS Certified Cloud Practitioner</h3>
+                        <a class="go" href="https://cp.certmetrics.com/amazon/en/public/verify/credential/8bd07fc2e98940299f6442a340ed9ad5" target="_blank" rel="noopener">Verificar credencial</a>
+                        <p>Fundamentos de la nube de AWS: servicios, seguridad, precios y soporte.</p>
+                    </article>
+                    <article class="item cert">
+                        <h3 class="title">Oracle Database Foundations Certified Associate</h3>
+                        <a class="go" href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=17989537F7E13CF64D97AB44E52F65A8D9F4B39D7CDFAAD6E12CDE09DFA5C4A7" target="_blank" rel="noopener">Verificar credencial</a>
+                        <p>Fundamentos de bases de datos relacionales y SQL.</p>
+                    </article>
+                    <article class="item cert">
+                        <h3 class="title">Java Certified Foundations Associate</h3>
+                        <a class="go" href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=A02492858208F1416A547C9B4A29C77907596320B7A39A34563D8DAF5F6F1EC5" target="_blank" rel="noopener">Verificar credencial</a>
+                        <p>Fundamentos de programación orientada a objetos con Java.</p>
+                    </article>
+                    <article class="item cert">
+                        <h3 class="title">telc Deutsch B1</h3>
+                        <p>Alemán, nivel B1 del Marco Común Europeo.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="block" id="experiencia">
+            <div class="wrap row">
+                <h2>Experiencia</h2>
+                <div>
+                    <article class="item">
+                        <h3 class="title">Desarrollador de software en prácticas, Aerín Sistemas</h3>
+                        <p class="when">Abril – junio de 2026</p>
+                        <ul>
+                            <li>Desarrollé un endpoint REST que devuelve series históricas horarias de datos meteorológicos para cualquier coordenada y rango de fechas.</li>
+                            <li>Desarrollé en Python un importador masivo de clientes: lee CSV, crea y actualiza usuarios con sus permisos, genera las contraseñas en un archivo de salida seguro e informa de los errores por fila.</li>
+                            <li>Construí un comparador de consumo energético multinivel (cliente, módulo, edificio, ciudad y cartera) con análisis entre entornos.</li>
+                            <li>Redacté el documento de diseño funcional de un módulo de configuración global con Django REST Framework.</li>
+                            <li>Participé en el despliegue y la configuración de un gestor EDI sobre Linux en un entorno de producción.</li>
+                        </ul>
+                    </article>
+                    <article class="item">
+                        <h3 class="title">Profesor de inglés</h3>
+                        <p class="when">2016 – 2024</p>
+                        <p>Academia (2016–2021) y después secundaria y bachillerato (2021–2024), con grupos de Bachillerato Internacional. Ocho años explicando conceptos difíciles a públicos distintos: es lo que ahora aplico a la documentación técnica.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="block" id="formacion">
+            <div class="wrap row">
+                <h2>Formación e idiomas</h2>
+                <div>
+                    <article class="item">
+                        <h3 class="title">Técnico Superior en Desarrollo de Aplicaciones Multiplataforma</h3>
+                        <p class="when">FP José Ramón Otero, 2024 – 2026</p>
+                    </article>
+                    <article class="item">
+                        <h3 class="title">Máster en Formación del Profesorado</h3>
+                        <p class="when">Universidad Rey Juan Carlos, 2020 – 2021</p>
+                    </article>
+                    <article class="item">
+                        <h3 class="title">Grado en Estudios Ingleses</h3>
+                        <p class="when">Universidad Complutense de Madrid, 2014 – 2019</p>
+                    </article>
+                    <div class="item langs">
+                        <span><strong>Español</strong>nativo</span>
+                        <span><strong>Inglés</strong>C2</span>
+                        <span><strong>Alemán</strong>B1</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="wrap">
+            Alojada en AWS y publicada desde <a href="https://github.com/oscarfsaav/aws-cloud-portfolio" target="_blank" rel="noopener">mi repositorio de GitHub</a>.
+        </div>
+    </footer>
 
     <script>
-        // Toggle Dark/Light Mode
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-
-        themeToggleBtn.addEventListener('click', () => {
-            const currentTheme = htmlElement.getAttribute('data-theme');
-            if (currentTheme === 'dark') {
-                htmlElement.setAttribute('data-theme', 'light');
-                themeToggleBtn.textContent = 'Dark Mode';
-            } else {
-                htmlElement.setAttribute('data-theme', 'dark');
-                themeToggleBtn.textContent = 'Light Mode';
-            }
-        });
-
-        // ------------------------------------------------------------------
-        // LÓGICA DEL CONTADOR DE VISITAS (API GATEWAY -> LAMBDA -> DYNAMODB)
-        // ------------------------------------------------------------------
-        
+        // Contador de visitas: API Gateway -> Lambda -> DynamoDB.
+        // Si algo falla, el número simplemente no aparece.
         async function updateVisitorCount() {
             const apiGatewayUrl = 'https://4yb3hxkly6.execute-api.eu-west-3.amazonaws.com/visitas';
-            
             try {
-                const response = await fetch(apiGatewayUrl, {
-                    method: 'GET', 
-                });
+                const response = await fetch(apiGatewayUrl, { method: 'GET' });
+                if (!response.ok) throw new Error('HTTP ' + response.status);
                 const data = await response.json();
-                
-                // Actualiza el span correcto del footer
-                document.getElementById('visitor-count').innerText = data.visitas;
+                document.getElementById('visitor-count').textContent = Number(data.visitas).toLocaleString('es-ES');
+                document.getElementById('visitor-box').classList.add('on');
             } catch (error) {
-                console.error("Error connecting to backend:", error);
-                document.getElementById('visitor-count').innerText = "ERR_CONNECTION";
+                console.error('Contador de visitas no disponible:', error);
             }
         }
-
-        // Ejecutar contador al iniciar
         updateVisitorCount();
     </script>
 </body>
